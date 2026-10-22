@@ -362,7 +362,6 @@ def h2hreaction_turn(target, damage, type, affinity, sin, attacker):
         blockreduction = -0.2
         levelreduction = (((offensivelevel - defensivelevel) /  100) - 0.1)
         
-        
         blockchance = (baseblockchance + levelmod)
         
         if random.random() < blockchance:
@@ -376,7 +375,24 @@ def h2hreaction_turn(target, damage, type, affinity, sin, attacker):
             
     elif chosenaction == 'parry':
         # default change to parry the attack decreasing enemiies stagger and harming some depending on circumstances
-        print()
+        baseparrychance = .3
+        offensivelevel = attacker.offensive_level
+        defensivelevel = target.defensive_level
+        levelmod = ((defensivelevel - offensivelevel) / 40)
+        parrychance = 0.0
+        
+        parrychance = (baseparrychance + levelmod)
+        
+        if random.random() < parrychance:
+            print(f"{target.name} parries the attack dealing {damage} stagger damage to {attacker.name}.")
+            attacker.stagger = (attacker.stagger - damage)
+            if attacker.stagger <= 0:
+                print(f"{attacker.name} is staggered.")
+                attacker.staggered = True
+            input()
+            
+            
+        
     elif chosenaction == 'clash':
         # chances to clash and win, clash for multiple turns, each time multiplying damage taken
         print()
@@ -531,8 +547,6 @@ def take_turn(entity):
     elif chosenaction == 'page':
         print()
     
-    
-    print()
 
     
 def start_combat():
@@ -659,7 +673,7 @@ def begin_encounter():
         turns += 1
         
 
-begin_encounter()
+
 
 
 
