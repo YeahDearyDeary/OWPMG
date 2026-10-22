@@ -217,6 +217,7 @@ def take_damage(entity, damage, type, affinity, sin):
     staggered = entity.staggered
     staggeredx2 = entity.staggeredx2
     staggeredx3 = entity.staggeredx3
+
     
     dmgmod = 0.0
     stgdmgmod = 0.0
@@ -266,7 +267,7 @@ def take_damage(entity, damage, type, affinity, sin):
             finalmod = ((dmgmod - 1) + (typedmgmod - 1) + (sindmgmod - 1))
         
     if sin == "None":
-        if staggered == False or staggeredx2 == False or staggeredx3 == False:
+        if not any([staggered, staggeredx2, staggeredx3]):
             finalmod = ((dmgmod - 1) + (typedmgmod - 1))
             finalstgmod = ((stgdmgmod - 1) + (typestgdmgmod - 1))
         if staggered == True:
@@ -299,14 +300,30 @@ def take_damage(entity, damage, type, affinity, sin):
                 stagger = nostaggerheal
             print(f"{entity.name} takes {damage * finalstgmod} Red stagger damage")
             entity.stagger = stagger
-            if stagger < 1:
-                entity.staggered = True
-                print(f"{entity.name} is staggered!")
-            
         else:
             stagger = (stagger - (damage))
             print(f"{entity.name} takes {damage * finalstgmod} Red stagger damage")
             entity.stagger = stagger
+
+    # Stagger Systems
+    if stagger <= 0 and staggered == False:
+        print(f"{entity.name} gets staggered.")
+        entity.staggered = True
+        
+    
+    if stagger <= maxstagger * -.5 and staggered == True and staggeredx2 == False:
+        print(f"{entity.name} is staggered+!")
+        entity.staggeredx2 = True
+    
+    if stagger <= maxstagger * -1 and staggeredx2 == True and staggeredx3 == False:
+        print(f"{entity.name} is staggered++!")
+        entity.staggeredx3 = True
+    
+
+    if health <= 0:
+        print(f"{entity.name} has been killed.")
+        entity.health = 0
+        return
     
     if health < currenthealth:
         print(f"{entity.name}'s Health: {health}/{maxhealth}")
@@ -317,10 +334,20 @@ def take_damage(entity, damage, type, affinity, sin):
     if sanity < currentsanity:
         print(f"{entity.name}'s Sanity: {sanity}/{maxsanity}")
     
+    input()
+    
+    
 
 
 
 def h2hreaction_turn(target, damage, type, affinity, sin, attacker):
+    if target.health <= 0:
+        print(f"{target.name} is dead")
+        return
+    if any([target.staggered, target.staggeredx2, target.staggeredx3]):
+        print(f"{target.name} is staggered and cannot react.")
+        take_damage(target, damage, type, affinity, sin)
+        return
     defenseaction = ['block', 'parry', 'riposte', 'counter', 'redirect', 'clash', 'dodge']
     defenseweight = [5, 0, 0, 5, 0, 0, 5]
     chosenaction = random.choices(defenseaction, weights=defenseweight, k=1)[0]
@@ -358,11 +385,12 @@ def h2hreaction_turn(target, damage, type, affinity, sin, attacker):
         take_damage(target, damage, type, affinity, sin)
         
         
-        if target.health < 0.0:
-            print(f"{target.name} has been killed.")
+        if target.health <= 0.0:
+            return
+        if target.stagger <= 0.0:
             return
         
-        input()
+        
         weapon1 = None
         weapon2 = None
         weapon1dmg = None
@@ -375,7 +403,7 @@ def h2hreaction_turn(target, damage, type, affinity, sin, attacker):
                 
         if target.weapon2 != None:
             weapon2 = target.weapon2
-            weapon1dmg = random.randint(weapon2.mindamage, weapon2.maxdamage)
+            weapon2dmg = random.randint(weapon2.mindamage, weapon2.maxdamage)
             
                 
                 
@@ -421,18 +449,28 @@ def h2hreaction_turn(target, damage, type, affinity, sin, attacker):
             print(f"{target.name} is hit by the attack.")
             input()
             take_damage(target, damage, type, affinity, sin)
-        
-        
-    
-    
-    print()
 
 
 
 def take_turn(entity):
-    if entity.stagger < 1:
-        print(f"{entity.name} is staggered!")
+    staggered = entity.staggered
+    staggeredx2 = entity.staggeredx2
+    staggeredx3 = entity.staggeredx3
+
+    if entity.health <= 0:
+        print(f"{entity.name} is dead.")
         return
+
+    if any([staggered, staggeredx2, staggeredx3]):
+        print(f"{entity.name} recovers from stagger.")
+        staggered = False
+        staggeredx2 = False
+        staggeredx3 = False
+        return
+
+    print(f"{entity.name} takes their turn.")
+    input("Press Enter to continue")
+
     team1 = []
     team2 = []
     target = None
@@ -469,7 +507,7 @@ def take_turn(entity):
         
         if entity.weapon2 != None:
             weapon2 = entity.weapon2
-            weapon1dmg = random.randint(weapon2.mindamage, weapon2.maxdamage)
+            weapon2dmg = random.randint(weapon2.mindamage, weapon2.maxdamage)
             
         
         
@@ -499,7 +537,19 @@ def take_turn(entity):
     
 def start_combat():
     turn_order = []
-    
+
+    global team1slot1
+    global team1slot2 
+    global team1slot3
+    global team1slot4 
+    global team1slot5
+
+    global team2slot1 
+    global team2slot2 
+    global team2slot3 
+    global team2slot4 
+    global team2slot5
+
     if team1slot1 != None:
         speed = random.randint(team1slot1.minspeed, team1slot1.maxspeed)
         turn_order.append((speed, team1slot1))
@@ -540,18 +590,76 @@ def start_combat():
         speed = random.randint(team2slot5.minspeed, team2slot5.maxspeed)
         turn_order.append((speed, team2slot5))
     
-    print(turn_order)
-    print("1")
-    
     for speed, entity in sorted(turn_order, key=lambda x: x[0], reverse=True):
-        print(f"{entity.name} takes their turn.")
         take_turn(entity)
-        input()
         print("Next Turn")
         print()
     
+def begin_encounter():
+    print("An encounter has begun.")
+    in_combat = True
+    turns = 1
+    global team1slot1
+    global team1slot2 
+    global team1slot3
+    global team1slot4 
+    global team1slot5
 
-start_combat()
+    global team2slot1 
+    global team2slot2 
+    global team2slot3 
+    global team2slot4 
+    global team2slot5
+
+    while in_combat:
+
+        if team1slot1 != None:
+            if team1slot1.health <= 0:
+                team1slot1 = None
+        if team1slot2 != None:
+            if team1slot2.health <= 0:
+                team1slot2 = None
+        if team1slot3 != None:
+            if team1slot3.health <= 0:
+                team1slot3 = None
+        if team1slot4 != None:
+            if team1slot4.health <= 0:
+                team1slot4 = None
+        if team1slot5 != None:
+            if team1slot5.health <= 0:
+                team1slot5 = None
+        if team2slot1 != None:
+            if team2slot1.health <= 0:
+                team2slot1 = None
+        if team2slot2 != None:
+            if team2slot2.health <= 0:
+                team2slot2 = None
+        if team2slot3 != None:
+            if team2slot3.health <= 0:
+                team2slot3 = None
+        if team2slot4 != None:
+            if team2slot4.health <= 0:
+                team2slot4 = None
+        if team2slot5 != None:
+            if team2slot5.health <= 0:
+                team2slot5 = None
+
+        print(f"Turn {turns}")
+
+        if not any(v is not None for v in (team1slot1, team1slot2, team1slot3, team1slot4, team1slot5)):
+            print("Everyone Has Fallen...")
+            in_combat = False
+            break
+        if not any(v is not None for v in (team2slot1, team2slot2, team2slot3, team2slot4, team2slot5)):
+            print("All Enemies Have Fallen...")
+            in_combat = False
+            break
+
+        start_combat()
+        turns += 1
+        
+
+begin_encounter()
 
 
 

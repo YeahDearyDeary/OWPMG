@@ -9,9 +9,9 @@ class player:
     #basic properties
     name = "Player"
     form = "Humanoid"
-    staggered = "No"
-    staggeredx2 = "No"
-    staggeredx3 = "No"
+    staggered = False
+    staggeredx2 = False
+    staggeredx3 = False
     # Base Stats
     fortitude = 0.0
     prudence = 0.0

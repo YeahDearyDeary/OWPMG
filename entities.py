@@ -26,9 +26,9 @@ class OneSin:
 class jcorpwaster:
     def __init__ (self, level):
         self.name = "J Corp Waster"
-        self.staggered = "No"
-        self.staggeredx2 = "No"
-        self.staggeredx3 = "No"
+        self.staggered = False
+        self.staggeredx2 = False
+        self.staggeredx3 = False
         self.level = level
         self.offensive_level = level
         self.defensive_level = level
