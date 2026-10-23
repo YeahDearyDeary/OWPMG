@@ -89,85 +89,6 @@ def showplayerstats():
     print(f"Ego Gifts: {player.gifts}")
     
     
-def actionchoice():
-    global current_area
-    travel = {"1", "Travel", "travel", "T", "t"}
-    combatskills = {"2", "Combat Skills", "combat skills", "combat Skills", "Combat skills", "CS", "cs"}
-    characterstatus = {"3", "Character Stats", "Character stats", "character Stats", "character stats", "CHS", "chs"}
-    inventory = {"4", "Inventory", "inventory", "i", "I"}
-    Team = {"5", "Team", "team", "T", "t"}
-    save = {"6", "Save", "save", "s", "S"}
-    print(f"You have {actions} actions left")
-    print(f"Current Area: {current_area}")
-    print("\n" + areas[current_area]["description"])
-    print("What do you do?")
-    print("1. Travel")
-    print("2. Combat Skills")
-    print("3. Character Stats")
-    print("4. Inventory")
-    print("5. Team")
-    print("6. Save")
-    selected_action = input()
-    if selected_action in travel:
-        while True:
-            print(areas[current_area]["exits"])
-            choice = input("Where do you go? ('Stop' to go back.): ")
-        
-            if choice == "Stop":
-                print("Going Back")
-                break
-            
-            exits = areas[current_area]["exits"]
-            if choice in exits:
-                print(f"You go to {choice}")
-                current_area = choice
-                break
-            else:
-                print("Can't do that")
-        actionchoice()
-    elif selected_action in combatskills:
-        print()
-        actionchoice()
-    elif selected_action in characterstatus:
-        showplayerstats()
-        input()
-        actionchoice()  
-    elif selected_action in inventory:
-        print()
-        actionchoice()
-    elif selected_action in Team:
-        print("Team Members:")
-        print(f"Slot 1: {team1slot1.name if team1slot1 is not None else 'Empty'}")
-        print(f"Slot 2: {team1slot2.name if team1slot2 is not None else 'Empty'}")
-        print(f"Slot 3: {team1slot3.name if team1slot3 is not None else 'Empty'}")
-        print(f"Slot 4: {team1slot4.name if team1slot4 is not None else 'Empty'}")
-        print(f"Slot 5: {team1slot5.name if team1slot5 is not None else 'Empty'}")
-        input()
-        actionchoice()
-    elif selected_action in save:
-        print()
-        actionchoice()  
-    else:
-        print("That is not an option")
-        actionchoice()
-
-# Set up the game
-def start_game():
-    input("Press Enter to Continue. ")
-    print("As you open your eyes you look around to see a few trash bins and huge crowding walls...")
-    input()
-    print("for whatever reason you've now found yourself stranded and alone in J Corp.")
-    print("This new situation won't stop you from surviving in this unfair city...")
-    input()
-    # Change Players name from Player
-    print("My name is...")
-    player_name = input("Enter a Name: ")
-    player.name = player_name
-    print(f"This is the beginning of {player_name}'s Purgatory")
-    input()
-    showday()
-    actionchoice()
-    
 def add_to_combat(team, entity):
     global team1slot1
     global team1slot2 
@@ -711,7 +632,196 @@ def begin_encounter():
 
         start_combat()
         turns += 1
+
+def encounters():
+    global current_area
+    global ahn
+
+    encounter_chance = 0.0
+    encounterloop = False
+    if current_area == "J Corp Alleyways":
+        encounter_chance = 0.2
+        if random.random() < encounter_chance:
+            encounterloop = True
+            print("Some shadowy figures approach you begging for your Ahn.")
+            print(f"You have {ahn} Ahn.")
+            print("What do you do?")
+            print("1. Give them some money (200 Ahn)")
+            print("2. Brush them off and keep walking")
+            print("3. Run away as fast as possible")
+            print("4. Threaten to rob them")
+            print("5. Attack the one asking for money")
+            print("6. Reason with them")
+            print()
+            while encounterloop:
+                player_choice = input("Enter your choice: ")
+                if player_choice == "1":
+                    if ahn >= 200:
+                        print()
+                        print("You hand them some Ahn for their troubles.")
+                        ahn -= 200
+                        print(f"You have {ahn} Ahn left.")
+                        input()
+                        print("J Corp Waster: 'Heh, thanks for this, I can feel my luck changing already!")
+                        print("They leave.")
+                        input()
+                        encounterloop = False
+                        break
+                    else:
+                        attack_chance = 0.5
+                        print("You don't have enough Ahn to give them.")
+                        print("J Corp Waster: 'Damn it! I knew this jackass was broke!")
+                        print()
+                        input()
+                        if random.random() < attack_chance:
+                            print("J Corp Waster: 'Lets just take his organs! It'll sell for well")
+                            print("They attack you!")
+                            input()
+                            waster1 = entities.jcorpwaster(1)
+                            waster2 = entities.jcorpwaster(1)
+                            waster3 = entities.jcorpwaster(1)
+                            add_to_combat(2, waster1)
+                            add_to_combat(2, waster2)
+                            add_to_combat(2, waster3)
+                            begin_encounter()
+                            encounterloop = False
+                            break
+                        else:
+                            print("J Corp Waster: 'What a load of Shite...")
+                            print("They leave.")
+                            input()
+                            encounterloop = False
+                            break
+                elif player_choice == "2":
+                    attack_chance = 0.7
+                    print("Brushing the first figure's shoulder you keep walking.")
+                    input()
+                    if random.random() < attack_chance:
+                        print("J Corp Waster: 'Hurry and grab em! We'll just take what we want!")
+                        print("They attack you!")
+                        input()
+                        waster1 = entities.jcorpwaster(1)
+                        waster2 = entities.jcorpwaster(1)
+                        waster3 = entities.jcorpwaster(1)
+                        add_to_combat(2, waster1)
+                        add_to_combat(2, waster2)
+                        add_to_combat(2, waster3)
+                        begin_encounter()
+                        encounterloop = False
+                        break
+                    else:
+                        print("J Corp Waster: 'Asshole...")
+                        print("They leave.")
+                        input()
+                        encounterloop = False
+                        break
+                elif player_choice == "3":
+                    print("You decide to avoid the area and find another path.")
+                    input()
+                    encounterloop = False
+                    break
+                else:
+                    print("That is not an option.")
+    
+    
+def actionchoice():
+    global current_area
+    if player.health <= 0:
+        print("You have died.")
+        print(f"Days Survived: {days}")
+        print(f"Total Ahn Collected: {ahn}")
+        print(f"Player Level {player.level}")
+        return
+    travel = {"1", "Travel", "travel", "T", "t"}
+    interact = {"2", "Interact", "interact", "It", "it"}
+    combatskills = {"3", "Combat Skills", "combat skills", "combat Skills", "Combat skills", "CS", "cs"}
+    characterstatus = {"4", "Character Stats", "Character stats", "character Stats", "character stats", "CHS", "chs"}
+    inventory = {"5", "Inventory", "inventory", "i", "I"}
+    Team = {"6", "Team", "team", "Te", "te"}
+    save = {"7", "Save", "save", "s", "S"}
+    print(f"You have {actions} actions left")
+    print(f"Current Area: {current_area}")
+    print("\n" + areas[current_area]["description"])
+    print("What do you do?")
+    print("1. Travel")
+    print("2. Interact")
+    print("3. Combat Skills")
+    print("4. Character Stats")
+    print("5. Inventory")
+    print("6. Team")
+    print("7. Save")
+    selected_action = input()
+    if selected_action in travel:
+        while True:
+            print(areas[current_area]["exits"])
+            choice = input("Where do you go? ('Stop' to go back.): ")
         
+            if choice == "Stop":
+                print("Going Back")
+                break
+            
+            exits = areas[current_area]["exits"]
+            numerical_choices = {str(i + 1): exit_name for i, exit_name in enumerate(exits)}
+            if choice in numerical_choices:
+                choice = numerical_choices[choice]
+            if choice in exits:
+                print(f"You go to {choice}")
+                current_area = choice
+                encounters()
+                break
+            else:
+                print("Can't do that")
+        actionchoice()
+    elif selected_action in interact:
+        if areas[current_area].get("interactable"):
+            print(areas[current_area]["interactable"])
+        else:
+            print("There's nothing to interact with here.")
+        input()
+        actionchoice()
+    elif selected_action in combatskills:
+        print()
+        actionchoice()
+    elif selected_action in characterstatus:
+        showplayerstats()
+        input()
+        actionchoice()  
+    elif selected_action in inventory:
+        print()
+        actionchoice()
+    elif selected_action in Team:
+        print("Team Members:")
+        print(f"Slot 1: {team1slot1.name if team1slot1 is not None else 'Empty'}")
+        print(f"Slot 2: {team1slot2.name if team1slot2 is not None else 'Empty'}")
+        print(f"Slot 3: {team1slot3.name if team1slot3 is not None else 'Empty'}")
+        print(f"Slot 4: {team1slot4.name if team1slot4 is not None else 'Empty'}")
+        print(f"Slot 5: {team1slot5.name if team1slot5 is not None else 'Empty'}")
+        input()
+        actionchoice()
+    elif selected_action in save:
+        print()
+        actionchoice()  
+    else:
+        print("That is not an option")
+        actionchoice()
+
+# Set up the game
+def start_game():
+    input("Press Enter to Continue. ")
+    print("As you open your eyes you look around to see a few trash bins and huge crowding walls...")
+    input()
+    print("for whatever reason you've now found yourself stranded and alone in J Corp.")
+    print("This new situation won't stop you from surviving in this unfair city...")
+    input()
+    # Change Players name from Player
+    print("My name is...")
+    player_name = input("Enter a Name: ")
+    player.name = player_name
+    print(f"This is the beginning of {player_name}'s Purgatory")
+    input()
+    showday()
+    actionchoice()
+
 start_game()
 
 
