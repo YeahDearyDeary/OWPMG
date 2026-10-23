@@ -54,12 +54,17 @@ def showplayerstats():
     print(f"Temperence: {player.temperence}")
     print(f"Justice: {player.justice}")
     print()
+    print("Combat Stats")
+    print(f"Offensive Level: {player.offensive_level}")
+    print(f"Defensive Level: {player.defensive_level}")
+    print(f"Reactions: {player.maxreactions}")
     print(f"Attack: {player.atk}")
     print(f"Attack Speed: {player.atkspeed}")
     print(f"Speed: {player.minspeed:.0f} - {player.maxspeed:.0f}")
     print(f"Work Ethinc: {player.workgain}")
     print(f"Work Speed: {player.workspeed}")
     print()
+    print("Resistances")
     print(f"Slash Resistance: {player.slashres} | Pierce Resistance: {player.pierceres} | Blunt Resistance: {player.bluntres}")
     print(f"Slash Stagger Resistance: {player.slashstgres} | Pierce Stagger Resistance: {player.piercestgres} | Blunt Stagger Resistance: {player.bluntstgres}")
     print(f"Red Resistance: {player.redres} | Red Stagger Resistance {player.redstgres}")
@@ -89,8 +94,8 @@ def actionchoice():
     travel = {"1", "Travel", "travel", "T", "t"}
     combatskills = {"2", "Combat Skills", "combat skills", "combat Skills", "Combat skills", "CS", "cs"}
     characterstatus = {"3", "Character Stats", "Character stats", "character Stats", "character stats", "CHS", "chs"}
-    equip = {"4", "Equip", "equip", "e", "E"}
-    party = {"5", "Party", "party", "P", "p"}
+    inventory = {"4", "Inventory", "inventory", "i", "I"}
+    Team = {"5", "Team", "team", "T", "t"}
     save = {"6", "Save", "save", "s", "S"}
     print(f"You have {actions} actions left")
     print(f"Current Area: {current_area}")
@@ -99,8 +104,8 @@ def actionchoice():
     print("1. Travel")
     print("2. Combat Skills")
     print("3. Character Stats")
-    print("4. Equip")
-    print("5. Party")
+    print("4. Inventory")
+    print("5. Team")
     print("6. Save")
     selected_action = input()
     if selected_action in travel:
@@ -127,10 +132,18 @@ def actionchoice():
         showplayerstats()
         input()
         actionchoice()  
-    elif selected_action in equip:
+    elif selected_action in inventory:
         print()
-    elif selected_action in party:
-        print()
+        actionchoice()
+    elif selected_action in Team:
+        print("Team Members:")
+        print(f"Slot 1: {team1slot1.name if team1slot1 is not None else 'Empty'}")
+        print(f"Slot 2: {team1slot2.name if team1slot2 is not None else 'Empty'}")
+        print(f"Slot 3: {team1slot3.name if team1slot3 is not None else 'Empty'}")
+        print(f"Slot 4: {team1slot4.name if team1slot4 is not None else 'Empty'}")
+        print(f"Slot 5: {team1slot5.name if team1slot5 is not None else 'Empty'}")
+        input()
+        actionchoice()
     elif selected_action in save:
         print()
         actionchoice()  
@@ -200,7 +213,6 @@ def add_to_combat(team, entity):
         
 new_enemy = entities.jcorpwaster(1)
 
-add_to_combat(2, new_enemy)
 add_to_combat(1, player)
 
 
@@ -336,20 +348,28 @@ def take_damage(entity, damage, type, affinity, sin):
     
     input()
     
-    
-
-
 
 def h2hreaction_turn(target, damage, type, affinity, sin, attacker):
     if target.health <= 0:
         print(f"{target.name} is dead")
         return
+
+    
     if any([target.staggered, target.staggeredx2, target.staggeredx3]):
         print(f"{target.name} is staggered and cannot react.")
         take_damage(target, damage, type, affinity, sin)
         return
+
+    if target.reactions <= 0:
+        print(f"{target.name} has no reactions left.")
+        take_damage(target, damage, type, affinity, sin)
+        return
+    
+    if target.reactions > 0:
+        target.reactions -= 1
+
     defenseaction = ['block', 'parry', 'riposte', 'counter', 'redirect', 'clash', 'dodge']
-    defenseweight = [5, 0, 0, 5, 0, 0, 5]
+    defenseweight = [5, 3, 0, 2, 0, 0, 3]
     chosenaction = random.choices(defenseaction, weights=defenseweight, k=1)[0]
     
     if chosenaction == 'block':
@@ -386,10 +406,13 @@ def h2hreaction_turn(target, damage, type, affinity, sin, attacker):
         if random.random() < parrychance:
             print(f"{target.name} parries the attack dealing {damage} stagger damage to {attacker.name}.")
             attacker.stagger = (attacker.stagger - damage)
-            if attacker.stagger <= 0:
+            if attacker.stagger <= 0.0:
                 print(f"{attacker.name} is staggered.")
                 attacker.staggered = True
             input()
+        else:
+            print(f"{target.name} fails to parry the attack.")
+            take_damage(target, damage, type, affinity, sin)
             
             
         
@@ -477,11 +500,18 @@ def take_turn(entity):
         print(f"{entity.name} is dead.")
         return
 
+    if entity.staggertimer >= 1:
+            print(f"{entity.name} recovers from stagger.")
+            entity.staggered = False
+            entity.staggeredx2 = False
+            entity.staggeredx3 = False
+            entity.stagger = entity.maxstagger
+            entity.staggertimer = 0
+
     if any([staggered, staggeredx2, staggeredx3]):
-        print(f"{entity.name} recovers from stagger.")
-        staggered = False
-        staggeredx2 = False
-        staggeredx3 = False
+        if entity.staggertimer == 0:
+            print(f"{entity.name} is staggered and cannot take their turn.")
+        entity.staggertimer += 1
         return
 
     print(f"{entity.name} takes their turn.")
@@ -565,42 +595,52 @@ def start_combat():
     global team2slot5
 
     if team1slot1 != None:
+        team1slot1.reactions = team1slot1.maxreactions
         speed = random.randint(team1slot1.minspeed, team1slot1.maxspeed)
         turn_order.append((speed, team1slot1))
     
     if team1slot2 != None:
+        team1slot2.reactions = team1slot2.maxreactions
         speed = random.randint(team1slot2.minspeed, team1slot2.maxspeed)
         turn_order.append((speed, team1slot2))
     
     if team1slot3 != None:
+        team1slot3.reactions = team1slot3.maxreactions
         speed = random.randint(team1slot3.minspeed, team1slot3.maxspeed)
         turn_order.append((speed, team1slot3))
     
     if team1slot4 != None:
+        team1slot4.reactions = team1slot4.maxreactions
         speed = random.randint(team1slot4.minspeed, team1slot4.maxspeed)
         turn_order.append((speed, team1slot4))
     
     if team1slot5 != None:
+        team1slot5.reactions = team1slot5.maxreactions
         speed = random.randint(team1slot5.minspeed, team1slot5.maxspeed)
         turn_order.append((speed, team1slot5))
         
     if team2slot1 != None:
+        team2slot1.reactions = team2slot1.maxreactions
         speed = random.randint(team2slot1.minspeed, team2slot1.maxspeed)
         turn_order.append((speed, team2slot1))
         
     if team2slot2 != None:
+        team2slot2.reactions = team2slot2.maxreactions
         speed = random.randint(team2slot2.minspeed, team2slot2.maxspeed)
         turn_order.append((speed, team2slot2))
         
     if team2slot3 != None:
+        team2slot3.reactions = team2slot3.maxreactions
         speed = random.randint(team2slot3.minspeed, team2slot3.maxspeed)
         turn_order.append((speed, team2slot3))
         
     if team2slot4 != None:
+        team2slot4.reactions = team2slot4.maxreactions
         speed = random.randint(team2slot4.minspeed, team2slot4.maxspeed)
         turn_order.append((speed, team2slot4))
         
     if team2slot5 != None:
+        team2slot5.reactions = team2slot5.maxreactions
         speed = random.randint(team2slot5.minspeed, team2slot5.maxspeed)
         turn_order.append((speed, team2slot5))
     
@@ -672,7 +712,7 @@ def begin_encounter():
         start_combat()
         turns += 1
         
-
+start_game()
 
 
 

@@ -29,6 +29,9 @@ class jcorpwaster:
         self.staggered = False
         self.staggeredx2 = False
         self.staggeredx3 = False
+        self.staggertimer = 0
+        self.maxreactions = 1
+        self.reactions = self.maxreactions
         self.level = level
         self.offensive_level = level
         self.defensive_level = level

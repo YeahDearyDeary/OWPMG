@@ -12,6 +12,10 @@ class player:
     staggered = False
     staggeredx2 = False
     staggeredx3 = False
+    staggertimer = 0
+    maxreactions = 1
+    reactions = maxreactions
+    
     # Base Stats
     fortitude = 0.0
     prudence = 0.0
