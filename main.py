@@ -55,6 +55,7 @@ def showplayerstats():
     print(f"Justice: {player.justice}")
     print()
     print("Combat Stats")
+    print(f"Level: {player.level}")
     print(f"Offensive Level: {player.offensive_level}")
     print(f"Defensive Level: {player.defensive_level}")
     print(f"Reactions: {player.maxreactions}")
@@ -71,6 +72,10 @@ def showplayerstats():
     print(f"White Resistance: {player.whiteres} | White Stagger Resistance {player.whitestgres}")
     print(f"Black Resistance: {player.blackres} | Black Stagger Resistance {player.blackstgres}")
     print(f"Pale Resistance: {player.paleres}")
+    print(f"Wrath Resistance: {player.wrathres} | Lust Resistance: {player.lustres}")
+    print(f"Sloth Resistance: {player.slothres} | Gluttony Resistance: {player.gluttonyres}")
+    print(f"Gloom Resistance: {player.gloomres} | Pride Resistance: {player.prideres}")
+    print(f"Envy Resistance: {player.envyres}")
     print()
     print("Items and Equipment")
     print(f"Inventory: {player.inventory}")
@@ -132,8 +137,6 @@ def add_to_combat(team, entity):
         else:
             print("Team 2 Full")
         
-new_enemy = entities.jcorpwaster(1)
-
 add_to_combat(1, player)
 
 
@@ -716,7 +719,7 @@ def encounters():
                         encounterloop = False
                         break
                 elif player_choice == "3":
-                    print("You decide to avoid the area and find another path.")
+                    print("You bolt, avoiding any type of manipulation tactics they may employ")
                     input()
                     encounterloop = False
                     break
