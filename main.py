@@ -16,6 +16,14 @@ player = character.player
 player.suitslot = items.regsuit
 player.suit_equip()
 
+# Relationships
+
+reeniworkshoprel = 0
+chiyohazardsrel = 0
+relationships = []
+relationships.append("Chiyo's Hazard's")
+relationships.append("Reeni's Workshop")
+
 # Have combat slots for later
 team1slot1 = None
 team1slot2 = None
@@ -729,7 +737,9 @@ def encounters():
     
 def actionchoice():
     global current_area
+    global relationships
     if player.health <= 0:
+        print()
         print("You have died.")
         print(f"Days Survived: {days}")
         print(f"Total Ahn Collected: {ahn}")
@@ -777,7 +787,32 @@ def actionchoice():
         actionchoice()
     elif selected_action in interact:
         if areas[current_area].get("interactable"):
+            buy = ["Buy", "buy"]
+            sell = ["Sell", "sell"]
+            if areas[current_area] == "Reeni's Workhop":
+                print(f"Reeni's Workshop Relationship: {reeniworkshoprel}")
+                
+                
             print(areas[current_area]["interactable"])
+            print()
+            
+            while True:
+                
+                choice = input("What would you like to do?")
+            
+                if areas[current_area] == "Reeni's Workshop":
+                    if choice in buy:
+                        print()
+                        
+                        break
+                    elif choice in sell:
+                        print()
+                        
+                        break
+                    elif choice == "Stop":
+                        break
+                    else:
+                        print("That isn't an option")
         else:
             print("There's nothing to interact with here.")
         input()
