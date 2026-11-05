@@ -37,7 +37,7 @@ baton = weapon_maker("Standard Issue Baton", "Weapon", "Melee", 1, 2, "Blunt", "
 
 full_item_list = ["Standard Issue Baton", "Tattered Clothes"]
 
-def namegenerator(affinity):
+def weaponnamegenerator(affinity):
     prefix = ["Million ", "Envyfull ", "Destructive ", "Explosive ", "Dangerous ", "Rumbling ", "Wrathfull ", "Pridefull ", "Glunttenous ", "Gloomy ", "Lustfull ", "Slothfull "]
     middle = [""]
     endstab = ["Spear", "Shiv", "Javilen", "Pole", "Dagger", "Sword", "Glaive", "Stilleto", "Pike"]
@@ -65,12 +65,24 @@ def namegenerator(affinity):
         weaponname = prefixname + middlename + endname
     
     return weaponname
+
+def suitnamegenerator():
+    prefix = []
+    middle = []
+    end = ["Jacket", ""]
+    prefixchance = .3
     
+    prefixname = ""
+    middlename = ""
+    endname = ""
+    suitname = None
+
+
 
 def reeniweapons():
     weaponaffinitys = ["Slash", "Blunt", "Pierce"]
     weapon_affinity = random.choice(weaponaffinitys)
-    name = namegenerator(weapon_affinity)
+    name = weaponnamegenerator(weapon_affinity)
     mindamage = random.randint(1,3)
     maxdamage = random.randint(3,6)
     itemtype = "Weapon"
@@ -79,6 +91,24 @@ def reeniweapons():
     weapon = weapon_maker(name, itemtype, weapontype, mindamage, maxdamage, weapon_affinity, damagetype)
     return weapon
         
+def reenisuits():
+    name = suitnamegenerator()
+    slashres = random.uniform(1.0, 2)
+    slashstgres = random.uniform(1.0, 2)
+    pierceres = random.uniform(1.0, 2)
+    piercestgres = random.uniform(1.0, 2)
+    bluntres = random.uniform(1.0, 2)
+    bluntstgres = random.uniform(1.0, 2)
+    redres = random.uniform(1.5, 2)
+    redstgres = random.uniform(1.5, 2)
+    whiteres = random.uniform(1.5, 2)
+    whitestgres = random.uniform(1.5, 2)
+    blackres = random.uniform(1.5, 2)
+    blackstgres = random.uniform(1.5, 2)
+    paleres = random.uniform(1.8, 2)
+    suit = suit_maker()
+    
+    
 def weapon_display(shop):
     if shop == "Reeniw":
         reeniweapon = reeniweapons()
