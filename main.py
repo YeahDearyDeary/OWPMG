@@ -16,6 +16,8 @@ player = character.player
 player.suitslot = items.regsuit
 player.suit_equip()
 
+# Quick Item shop stuff
+
 # Relationships
 
 reeniworkshoprel = 0
@@ -789,19 +791,47 @@ def actionchoice():
         if areas[current_area].get("interactable"):
             buy = ["Buy", "buy"]
             sell = ["Sell", "sell"]
-            if areas[current_area] == "Reeni's Workhop":
-                print(f"Reeni's Workshop Relationship: {reeniworkshoprel}")
+            if areas[current_area].get("relationship"):
+                print(f"{areas[current_area]["name"]} Relationship: {areas[current_area]["relationship"]}")
+            else:
+                print()
                 
                 
             print(areas[current_area]["interactable"])
-            print()
             
-            while True:
-                
-                choice = input("What would you like to do?")
             
-                if areas[current_area] == "Reeni's Workshop":
+            if areas[current_area]["name"] == "Reeni's Workshop":
+                print()
+                choice = input("What would you like to do? (Stop to go back) ")
+                while True:
+                    
                     if choice in buy:
+                        itemtype = ["Weapon", "Suit"]
+                        
+                        item1 = random.choice(itemtype)
+                        item2 = random.choice(itemtype)
+                        item3 = random.choice(itemtype)
+                        item4 = random.choice(itemtype)
+                        
+                        if item1 == "Weapon":
+                            item1 = items.weapon_display("Reeniw")
+                        elif item1 == "Suit":
+                            print("suitexample")
+                        if item2 == "Weapon":
+                            item2 = items.weapon_display("Reeniw")
+                        elif item2 == "Suit":
+                            print("suitexample")
+                        if item3 == "Weapon":
+                            item3 = items.weapon_display("Reeniw")
+                        elif item3 == "Suit":
+                            print("suitexample")
+                        if item4 == "Weapon":
+                            item4 = items.weapon_display("Reeniw")
+                        elif item4 == "Suit":
+                            print("suitexample")
+                        
+                        
+                        
                         print()
                         
                         break
@@ -813,6 +843,7 @@ def actionchoice():
                         break
                     else:
                         print("That isn't an option")
+                        choice = input("What would you like to do? (Stop to go back) ")
         else:
             print("There's nothing to interact with here.")
         input()
@@ -841,6 +872,7 @@ def actionchoice():
         actionchoice()  
     else:
         print("That is not an option")
+        input()
         actionchoice()
 
 # Set up the game
