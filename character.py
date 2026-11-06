@@ -116,7 +116,12 @@ class player:
     def suit_equip():
         suitslot = player.suitslot
 
-        
+        player.slashres = suitslot.slres
+        player.slashstgres = suitslot.slstgres
+        player.pierceres = suitslot.pires
+        player.piercestgres = suitslot.pistgres
+        player.bluntres = suitslot.blres
+        player.bluntstgres = suitslot.blstgres
         player.redres = suitslot.redres
         player.redstgres = suitslot.redstgres
         player.whiteres = suitslot.whiteres

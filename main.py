@@ -1,9 +1,25 @@
+import pygame
+import sys
+from sys import exit
 import character
 import entities
 import items
 import city
 import math
 import random
+
+# screen variables
+screen_width = 800
+screen_height = 600
+
+
+
+pygame.init()
+
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("OWPMG")
+clock = pygame.time.Clock()
+
 
 ahn = 1000
 areas = city.areas
@@ -229,26 +245,26 @@ def take_damage(entity, damage, type, affinity, sin):
     if type == "Red":
         if finalmod != 0.0:
             noheal = health
-            health = (health - ((damage * finalmod)))
+            health = (health - (round(damage * finalmod, 1)))
             if health > noheal:
                 health = noheal
-            print(f"{entity.name} takes {damage * finalmod} Red damage")
+            print(f"{entity.name} takes {round(damage * finalmod, 1)} Red damage")
             entity.health = health
         else:
             health = (health - (damage))
-            print(f"{entity.name} takes {damage} Red damage")
+            print(f"{entity.name} takes {round(damage, 1)} Red damage")
             entity.health = health
         
         if finalstgmod != 0.0:
             nostaggerheal = stagger
-            stagger = (stagger - ((damage * finalstgmod)))
+            stagger = (stagger - (round(damage * finalstgmod, 1)))
             if stagger > nostaggerheal:
                 stagger = nostaggerheal
-            print(f"{entity.name} takes {damage * finalstgmod} Red stagger damage")
+            print(f"{entity.name} takes {round(damage * finalstgmod, 1)} Red stagger damage")
             entity.stagger = stagger
         else:
             stagger = (stagger - (damage))
-            print(f"{entity.name} takes {damage * finalstgmod} Red stagger damage")
+            print(f"{entity.name} takes {round(damage * finalstgmod, 1)} Red stagger damage")
             entity.stagger = stagger
 
     # Stagger Systems
@@ -265,12 +281,14 @@ def take_damage(entity, damage, type, affinity, sin):
         print(f"{entity.name} is staggered++!")
         entity.staggeredx3 = True
     
-
+    # Dying message
     if health <= 0:
         print(f"{entity.name} has been killed.")
         entity.health = 0
         return
     
+
+    # Display the health, stagger, and sanity if they have changed
     if health < currenthealth:
         print(f"{entity.name}'s Health: {health}/{maxhealth}")
     
@@ -736,10 +754,103 @@ def encounters():
                 else:
                     print("That is not an option.")
     
+# Shop setup items
+itemtype = ["Weapon", "Suit"]
+                        
+print()
+reeniitem1 = random.choice(itemtype)
+reeniitem2 = random.choice(itemtype)
+reeniitem3 = random.choice(itemtype)
+reeniitem4 = random.choice(itemtype)
+reeniprice1 = None
+reeniprice2 = None
+reeniprice3 = None
+reeniprice4 = None
+                        
+if reeniitem1 == "Weapon":
+    reeniitem1 = items.reeniweapons()
+    reeniprice1 = items.item_price(reeniitem1)
+elif reeniitem1 == "Suit":
+    reeniitem1 = items.reenisuits()
+    reeniprice1 = items.item_price(reeniitem1)
+if reeniitem2 == "Weapon":
+    reeniitem2 = items.reeniweapons()
+    reeniprice2 = items.item_price(reeniitem2)
+elif reeniitem2 == "Suit":
+    reeniitem2 = items.reenisuits()
+    reeniprice2 = items.item_price(reeniitem2)
+if reeniitem3 == "Weapon":
+    reeniitem3 = items.reeniweapons()
+    reeniprice3 = items.item_price(reeniitem3)
+elif reeniitem3 == "Suit":
+    reeniitem3 = items.reenisuits()
+    reeniprice3 = items.item_price(reeniitem3)
+if reeniitem4 == "Weapon":
+    reeniitem4 = items.reeniweapons()
+    reeniprice4 = items.item_price(reeniitem4)
+elif reeniitem4 == "Suit":
+    reeniitem4 = items.reenisuits()
+    reeniprice4 = items.item_price(reeniitem4)
+
+
+
+def randomizereeni():
+    global reeniitem1
+    global reeniitem2
+    global reeniitem3
+    global reeniitem4
+    global reeniprice1
+    global reeniprice2
+    global reeniprice3
+    global reeniprice4
+
+    reeniitem1 = random.choice(itemtype)
+    reeniitem2 = random.choice(itemtype)
+    reeniitem3 = random.choice(itemtype)
+    reeniitem4 = random.choice(itemtype)
+
+    if reeniitem1 == "Weapon":
+        reeniitem1 = items.reeniweapons
+        reeniprice1 = items.item_price(reeniitem1)
+    elif reeniitem1 == "Suit":
+        reeniitem1 = items.reenisuits
+        reeniprice1 = items.item_price(reeniitem1)
+    if reeniitem2 == "Weapon":
+        reeniitem2 = items.reeniweapons
+        reeniprice2 = items.item_price(reeniitem2)
+    elif reeniitem2 == "Suit":
+        reeniitem2 = items.reenisuits
+        reeniprice2 = items.item_price(reeniitem2)
+    if reeniitem3 == "Weapon":
+        reeniitem3 = items.reeniweapons
+        reeniprice3 = items.item_price(reeniitem3)
+    elif reeniitem3 == "Suit":
+        reeniitem3 = items.reenisuits
+        reeniprice3 = items.item_price(reeniitem3)
+    if reeniitem4 == "Weapon":
+        reeniitem4 = items.reeniweapons
+        reeniprice4 = items.item_price(reeniitem4)
+    elif reeniitem4 == "Suit":
+        reeniitem4 = items.reenisuits
+        reeniprice4 = items.item_price(reeniitem4)
+        
     
+
+
 def actionchoice():
     global current_area
     global relationships
+    global ahn
+    global days
+    global actions
+    global reeniitem1
+    global reeniitem2
+    global reeniitem3
+    global reeniitem4
+    global reeniprice1
+    global reeniprice2
+    global reeniprice3
+    global reeniprice4
     if player.health <= 0:
         print()
         print("You have died.")
@@ -788,6 +899,7 @@ def actionchoice():
                 print("Can't do that")
         actionchoice()
     elif selected_action in interact:
+        
         if areas[current_area].get("interactable"):
             buy = ["Buy", "buy"]
             sell = ["Sell", "sell"]
@@ -806,32 +918,108 @@ def actionchoice():
                 while True:
                     
                     if choice in buy:
-                        itemtype = ["Weapon", "Suit"]
-                        
-                        item1 = random.choice(itemtype)
-                        item2 = random.choice(itemtype)
-                        item3 = random.choice(itemtype)
-                        item4 = random.choice(itemtype)
-                        
-                        if item1 == "Weapon":
-                            item1 = items.weapon_display("Reeniw")
-                        elif item1 == "Suit":
-                            print("suitexample")
-                        if item2 == "Weapon":
-                            item2 = items.weapon_display("Reeniw")
-                        elif item2 == "Suit":
-                            print("suitexample")
-                        if item3 == "Weapon":
-                            item3 = items.weapon_display("Reeniw")
-                        elif item3 == "Suit":
-                            print("suitexample")
-                        if item4 == "Weapon":
-                            item4 = items.weapon_display("Reeniw")
-                        elif item4 == "Suit":
-                            print("suitexample")
-                        
-                        
-                        
+                        print()
+                        print(f"Current Ahn: {ahn}")
+                        print()
+                        if reeniitem1 is not None:
+                            print("Items for Sale:")
+                            print("1.")
+                            items.item_display(reeniitem1)
+                            print(f"Price: {reeniprice1} Ahn")
+                            print()
+                        else:
+                            print()
+                            print("Shop Slot 1 Out of Stock")
+                            print()
+                        if reeniitem2 is not None:
+                            print("2.") 
+                            items.item_display(reeniitem2)
+                            print(f"Price: {reeniprice2} Ahn")
+                            print()
+                        else:
+                            print()
+                            print("Shop Slot 2 Out of Stock")
+                            print()
+                        if reeniitem3 is not None:
+                            print("3.")
+                            items.item_display(reeniitem3)
+                            print(f"Price: {reeniprice3} Ahn")
+                            print()
+                        else:
+                            print()
+                            print("Shop Slot 3 Out of Stock")
+                            print()
+                        if reeniitem4 is not None:
+                            print("4.")
+                            items.item_display(reeniitem4)
+                            print(f"Price: {reeniprice4} Ahn")
+                            print()
+                        else:
+                            print()
+                            print("Shop Slot 4 Out of Stock")
+                            print()
+
+                        itemchoice = input("Which item would you like to buy? (Stop to go back) ")
+
+                        while True:
+                            if itemchoice == "Stop" or itemchoice == "stop":
+                                print("Going Back")
+                                break
+                            elif itemchoice == "1":
+                                if ahn >= reeniprice1:
+                                    print(f"You bought {reeniitem1.name} for {reeniprice1} Ahn.")
+                                    player.inventory.append(reeniitem1)
+                                    ahn -= reeniprice1
+                                    reeniitem1 = None
+                                    reeniprice1 = None
+                                    print(f"You have {ahn} Ahn left.")
+                                    
+                                    break
+                                else:
+                                    print("You don't have enough Ahn for that item.")
+                                    itemchoice = input("Which item would you like to buy? (Stop to go back) ")
+                            elif itemchoice == "2":
+                                if ahn >= reeniprice2:
+                                    print(f"You bought {reeniitem2.name} for {reeniprice2} Ahn.")
+                                    player.inventory.append(reeniitem2)
+                                    ahn -= reeniprice2
+                                    reeniitem2 = None
+                                    reeniprice2 = None
+                                    print(f"You have {ahn} Ahn left.")
+                                    
+                                    break
+                                else:
+                                    print("You don't have enough Ahn for that item.")
+                                    itemchoice = input("Which item would you like to buy? (Stop to go back) ")
+                            elif itemchoice == "3":
+                                if ahn >= reeniprice3:
+                                    print(f"You bought {reeniitem3.name} for {reeniprice3} Ahn.")
+                                    player.inventory.append(reeniitem3)
+                                    ahn -= reeniprice3
+                                    reeniitem3 = None
+                                    reeniprice3 = None
+                                    print(f"You have {ahn} Ahn left.")
+                                    
+                                    break
+                                else:
+                                    print("You don't have enough Ahn for that item.")
+                                    itemchoice = input("Which item would you like to buy? (Stop to go back) ")
+                            elif itemchoice == "4":
+                                if ahn >= reeniprice4:
+                                    print(f"You bought {reeniitem4.name} for {reeniprice4} Ahn.")
+                                    player.inventory.append(reeniitem4)
+                                    ahn -= reeniprice4
+                                    reeniitem4 = None
+                                    reeniprice4 = None
+                                    print(f"You have {ahn} Ahn left.")
+                                   
+                                    break
+                                else:
+                                    print("You don't have enough Ahn for that item.")
+                                    itemchoice = input("Which item would you like to buy? (Stop to go back) ")
+                            else:
+                                print("That isn't an option")
+                                itemchoice = input("Which item would you like to buy? (Stop to go back) ")
                         print()
                         
                         break
@@ -856,6 +1044,147 @@ def actionchoice():
         input()
         actionchoice()  
     elif selected_action in inventory:
+        option1 = ["View Item", "view item", "View item", "view Item", "1"]
+        option2 = ["Equip Item", "equip item", "Equip item", "equip Item", "2"]
+        option3 = ["Unequip Item", "unequip item", "Unequip item", "unequip Item", "3"]
+        option4 = ["Use Item", "use item", "Use item", "use Item", "4"]
+        option5 = ["Drop Item", "drop item", "Drop item", "drop Item", "5"]
+
+        while True:
+            print()
+            print("Inventory:")
+            player_inventory = player.inventory
+            for item in player_inventory:
+                print(f"- {item.name} (Type: {item.item_type})")
+            print()
+            print("Equiped Items:")
+            print(f"Weapon 1: {player.weapon1.name if player.weapon1 is not None else 'None'}")
+            print(f"Weapon 2: {player.weapon2.name if player.weapon2 is not None else 'None'}")
+            print(f"Suit: {player.suitslot.name if player.suitslot is not None else 'None'}")
+            print()
+            print("Inventory Actions:")
+            print("1. View Item")
+            print("2. Equip Item")
+            print("3. Unequip Item")
+            print("4. Use Item")
+            print("5. Drop Item")
+
+            
+            choice = input("What would you like to do? (Stop to go back) ")
+            
+
+            if choice in option1:
+                print("What Item would you like to view?")
+                for item in player_inventory:
+                    print(f"- {item.name} (Type: {item.item_type})")
+                    print()
+                item_choice = input("Enter the name of the item you want to view (or type 'Stop' to go back): ")
+                while True:
+                    if item_choice == "Stop":
+                        print("Going Back")
+                        break
+                    for item in player_inventory:
+                        if item_choice == item.name:
+                            items.item_display(item)
+                            break
+                    else:
+                        print("That item is not in your inventory.")
+                    item_choice = input("Enter the name of the item you want to view (or type 'Stop' to go back): ")
+                break
+            elif choice in option2:
+                print("What Item would you like to equip?")
+                for item in player_inventory:
+                    print(f"- {item.name} (Type: {item.item_type})")
+                print()
+                item_choice = input("Enter the name of the item you want to equip (or type 'Stop' to go back): ")
+                while True:
+                    if item_choice == "Stop":
+                        print("Going Back")
+                        break
+                    for item in player_inventory:
+                        if item_choice == item.name:
+                            if item.item_type == "Weapon":
+                                if player.weapon1 is None:
+                                    player.weapon1 = item
+                                    print(f"You have equipped {item.name} as Weapon 1.")
+                                    player_inventory.remove(item)
+                                elif player.weapon2 is None:
+                                    player.weapon2 = item
+                                    print(f"You have equipped {item.name} as Weapon 2.")
+                                else:
+                                    print("You already have two weapons equipped. Please unequip one first.")
+                            elif item.item_type == "Armor":
+                                if player.suitslot is None:
+                                    player.suitslot = item
+                                    player.suit_equip()
+                                    print(f"You have equipped {item.name} as your Suit.")
+                                    player_inventory.remove(item)
+                                else:
+                                    print("You already have a suit equipped. Please unequip it first.")
+                            break
+                    else:
+                        print("That item is not in your inventory.")
+                    item_choice = input("Enter the name of the item you want to equip (or type 'Stop' to go back): ")
+                break
+            elif choice in option3:
+                    
+                print("You have the following items equipped:")
+                if player.weapon1 is not None:
+                    print(f"1. Weapon 1: {player.weapon1.name}")
+                else:
+                    print("1. Weapon 1: None")
+                if player.weapon2 is not None:
+                    print(f"2. Weapon 2: {player.weapon2.name}")
+                else:
+                    print("2. Weapon 2: None")
+                if player.suitslot is not None:
+                    print(f"3. Suit: {player.suitslot.name}")
+                else:
+                    print("3. Suit: None")
+
+                unequip_choice = input("Enter the number of the item you want to unequip (or type 'Stop' to go back): ")
+                while True:
+
+                    if unequip_choice == "Stop" or unequip_choice == "stop":
+                        print("Going Back")
+                        break
+                    elif unequip_choice == "1":
+                        if player.weapon1 is not None:
+                            player.inventory.append(player.weapon1)
+                            print(f"You have unequipped {player.weapon1.name}.")
+                            player.weapon1 = None
+                        else:
+                            print("You don't have a weapon equipped in slot 1.")
+                        break
+                    elif unequip_choice == "2":
+                        if player.weapon2 is not None:
+                            player.inventory.append(player.weapon2)
+                            print(f"You have unequipped {player.weapon2.name}.")
+                            player.weapon2 = None
+                        else:
+                            print("You don't have a weapon equipped in slot 2.")
+                        break
+                    elif unequip_choice == "3":
+                        if player.suitslot is not None:
+                            player.inventory.append(player.suitslot)
+                            print(f"You have unequipped {player.suitslot.name}.")
+                            player.suitslot = None
+                        else:
+                            print("You don't have a suit equipped.")
+                        break
+                    else:
+                        print("That is not a valid option.")
+                        unequip_choice = input("Enter the number of the item you want to unequip (or type 'Stop' to go back): ")
+                print()
+                break
+            elif choice in option4:
+                print()
+            elif choice in option5:
+                print()
+            elif choice == "Stop" or choice == "stop":
+                    
+                break
+            
         print()
         actionchoice()
     elif selected_action in Team:
@@ -892,7 +1221,13 @@ def start_game():
     showday()
     actionchoice()
 
-start_game()
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    
+    pygame.display.update()
 
 
 
