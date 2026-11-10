@@ -1,4 +1,5 @@
 import pygame
+import pygame_gui
 import sys
 from sys import exit
 import character
@@ -8,9 +9,23 @@ import city
 import math
 import random
 
+
+class ingameplayer(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface((30,50))
+        self.image.fill((255,255,255))
+        
+        self.rect = self.image.get_rect()
+        self.rect.center = (screen_width // 2, screen_height // 2)
+        
+        
+    
+    
+
 # screen variables
-screen_width = 800
-screen_height = 600
+screen_width = 1500
+screen_height = 750
 
 
 
@@ -20,6 +35,9 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("OWPMG")
 clock = pygame.time.Clock()
 
+igplayer = ingameplayer()
+all_sprites = pygame.sprite.Group()
+all_sprites.add(igplayer)
 
 ahn = 1000
 areas = city.areas
@@ -441,8 +459,6 @@ def h2hreaction_turn(target, damage, type, affinity, sin, attacker):
             input()
             take_damage(target, damage, type, affinity, sin)
 
-
-
 def take_turn(entity):
     staggered = entity.staggered
     staggeredx2 = entity.staggeredx2
@@ -528,9 +544,7 @@ def take_turn(entity):
         print()
     elif chosenaction == 'page':
         print()
-    
-
-    
+       
 def start_combat():
     turn_order = []
 
@@ -1228,6 +1242,13 @@ while True:
             sys.exit()
     
     pygame.display.update()
+    all_sprites.update()
+    screen.fill((0, 0, 0))
+    all_sprites.draw(screen)
+    
+    pygame.display.flip()
+    clock.tick(60)
+    
 
 
 
