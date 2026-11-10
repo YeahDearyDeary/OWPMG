@@ -23,22 +23,28 @@ class ingameplayer(pygame.sprite.Sprite):
     
     
 
-# screen variables
+# Visuals
 screen_width = 1500
 screen_height = 750
-
-
 
 pygame.init()
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("OWPMG")
+manager = pygame_gui.UIManager((screen_width, screen_height))
 clock = pygame.time.Clock()
+
+#Buttons
+startgame_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((500, 300), (100, 50)),
+    text="Start Game",
+    manager=manager)
 
 igplayer = ingameplayer()
 all_sprites = pygame.sprite.Group()
 all_sprites.add(igplayer)
 
+#Game Stuff
 ahn = 1000
 areas = city.areas
 current_area = "J Corp Alleyways"
@@ -1236,14 +1242,19 @@ def start_game():
     actionchoice()
 
 while True:
+    time = clock.tick(60) / 1000.0
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
     
+    manager.process_events(event)
     pygame.display.update()
     all_sprites.update()
+    manager.update(time)
     screen.fill((0, 0, 0))
+    manager.draw_ui(screen)
     all_sprites.draw(screen)
     
     pygame.display.flip()
