@@ -9,20 +9,6 @@ import city
 import math
 import random
 
-
-class ingameplayer(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.Surface((30,50))
-        self.image.fill((255,255,255))
-        
-        self.rect = self.image.get_rect()
-        self.rect.center = (screen_width // 2, screen_height // 2)
-        
-        
-    
-    
-
 # Visuals
 screen_width = 1500
 screen_height = 750
@@ -36,13 +22,36 @@ clock = pygame.time.Clock()
 
 #Buttons
 startgame_button = pygame_gui.elements.UIButton(
-    relative_rect=pygame.Rect((500, 300), (100, 50)),
+    relative_rect=pygame.Rect((1250, 200), (150, 75)),
     text="Start Game",
     manager=manager)
+continue_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((1250, 300), (150, 75)),
+    text="Continue",
+    manager=manager
+)
+settings_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((1250, 400), (150, 75)),
+    text="Settings",
+    manager=manager
+)
+quit_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((1250, 500), (150, 75)),
+    text="Quit",
+    manager=manager
+)
 
-igplayer = ingameplayer()
-all_sprites = pygame.sprite.Group()
-all_sprites.add(igplayer)
+ingameplayer = pygame.Rect(100, 100, 50, 50)
+
+def draw():
+    screen.fill((128, 128, 128))
+    pygame.draw.rect(screen, (255, 0, 0), ingameplayer)
+
+
+def completeupdate():
+    pygame.display.update()
+    manager.update(time)
+
 
 #Game Stuff
 ahn = 1000
@@ -1248,14 +1257,23 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    
+        
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if event.ui_element == startgame_button:
+                print("Works")
+            elif event.ui_element == settings_button:
+                print("Settings")
+            elif event.ui_element == quit_button:
+                pygame.quit()
+                sys.exit()
+    # Makes the buttons and stuff work
     manager.process_events(event)
-    pygame.display.update()
-    all_sprites.update()
-    manager.update(time)
-    screen.fill((0, 0, 0))
+    
+    completeupdate()
+    draw()
     manager.draw_ui(screen)
-    all_sprites.draw(screen)
+    
+    
     
     pygame.display.flip()
     clock.tick(60)
