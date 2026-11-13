@@ -10,17 +10,16 @@ import math
 import random
 
 # Visuals
-screen_width = 1500
-screen_height = 750
+screen_size = (1500, 750)
 
 pygame.init()
 
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode(screen_size)
 pygame.display.set_caption("OWPMG")
-manager = pygame_gui.UIManager((screen_width, screen_height))
+manager = pygame_gui.UIManager(screen_size)
 clock = pygame.time.Clock()
 
-#Buttons
+#Menu Buttons
 startgame_button = pygame_gui.elements.UIButton(
     relative_rect=pygame.Rect((1250, 200), (150, 75)),
     text="Start Game",
@@ -40,6 +39,43 @@ quit_button = pygame_gui.elements.UIButton(
     text="Quit",
     manager=manager
 )
+
+#settings panel
+settings_panel = pygame_gui.elements.UIPanel(
+    relative_rect=pygame.Rect((screen_size[0] // 2 - 200, screen_size[1] // 2 - 200), (400, 400)),
+    manager=manager,
+    visible=False
+)
+
+pygame_gui.elements.UILabel(
+    relative_rect=pygame.Rect((settings_panel.relative_rect.width // 2 - 190, 10), (380, 30)),
+    text="Settings",
+    manager=manager,
+    container=settings_panel
+)
+
+pygame_gui.elements.UILabel(
+    relative_rect=pygame.Rect((10, 50), (380, 30)),
+    text="Resolution: 1500x750",
+    manager=manager,
+    container=settings_panel
+)
+
+resolution_dropdown = pygame_gui.elements.UIDropDownMenu(
+    options_list=["800x600", "1024x768", "1280x720", "1366x768", "1440x900", "1600x900", "1920x1080"],
+    starting_option="Resolution",
+    relative_rect=pygame.Rect((10, 90), (380, 30)),
+    manager=manager,
+    container=settings_panel
+)
+
+close_settings_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((10, 10), (50, 20)),
+    text="Close",
+    manager=manager,
+    container=settings_panel
+)
+
 
 ingameplayer = pygame.Rect(100, 100, 50, 50)
 
@@ -1262,10 +1298,14 @@ while True:
             if event.ui_element == startgame_button:
                 print("Works")
             elif event.ui_element == settings_button:
+                settings_panel.show()
                 print("Settings")
             elif event.ui_element == quit_button:
                 pygame.quit()
                 sys.exit()
+            elif event.ui_element == close_settings_button:
+                settings_panel.hide()
+            
     # Makes the buttons and stuff work
     manager.process_events(event)
     
